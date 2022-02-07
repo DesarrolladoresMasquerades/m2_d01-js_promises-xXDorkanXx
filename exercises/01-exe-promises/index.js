@@ -33,18 +33,43 @@ console.log("Waiting for the fake server to reply...");
 // ----- You have to make it work as intended -----
 const serverResponse = new Promise(responseHandler);
 
-serverResponse.then().catch();
+serverResponse.then(updateDOMWithData).catch(updateDOMWithError);
 
 function updateDOMWithData(data) {
-  const html = ``; // build the html for data here
+  const html = `
+  <div class="container">
+    <article class="product">
+      <img src="${data.img}" alt="">
+      <h3>${data.item}</h3>
+      <h3>$ ${data.price}</h3>
+      <h4>Year: ${data.year}</h4>
+    </article>
+  </div>
+`;
 
-  // Append the HTML to the DOM here
+  const body = document.querySelector("body");
+  const div = document.createElement("div");
+
+  div.innerHTML = html;
+  body.appendChild(div);
 }
 
 function updateDOMWithError(error) {
-  const html = ``; // build the html for the error here
+  const html = `
+  <div class="container error">
+     <article class="product">
+       <h1>ERROR</h1>
+       <p>${error}</p>
+       <img src="https://vignette.wikia.nocookie.net/battlefordreamisland/images/f/f1/Roboty_book.png/revision/latest?cb=20190908174044" alt="">
+     </article>
+   </div>
+   `;
 
-  // Append the HTML to the DOM here
+   const body = document.querySelector("body");
+   const div = document.createElement("div");
+
+   div.innerHTML = html;
+   body.appendChild(div);
 }
 
 function responseHandler(resolveCb, rejectCb) {
@@ -61,10 +86,11 @@ function responseHandler(resolveCb, rejectCb) {
 
   setTimeout(
     () => {
-      // Read the "serverIsUp" flag here
-      // and handle the promise to dispaly the correct HTML into the DOM here.
+      if(serverIsUp) resolveCb(data)
+      else rejectCb(error)
     },
 
     1000 + Math.random() * 1000 // This is a random waiting time between 1000 and 2000 ms
   );
 }
+
