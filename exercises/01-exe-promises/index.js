@@ -33,6 +33,8 @@ console.log("Waiting for the fake server to reply...");
 // ----- You have to make it work as intended -----
 const serverResponse = new Promise(responseHandler);
 
+serverResponse.then(updateDOMWithData).catch(updateDOMWithError);
+
 function updateDOMWithData(data) {
   const html = `
   <div class="container">
@@ -46,8 +48,7 @@ function updateDOMWithData(data) {
 `;
 
   const body = document.querySelector("body");
-
-  const div = document.getElementById("mostrador");
+  const div = document.createElement("div");
 
   div.innerHTML = html;
   body.appendChild(div);
@@ -65,8 +66,7 @@ function updateDOMWithError(error) {
    `;
 
    const body = document.querySelector("body");
-
-   const div = document.getElementById("mostrador");
+   const div = document.createElement("div");
 
    div.innerHTML = html;
    body.appendChild(div);
@@ -86,8 +86,8 @@ function responseHandler(resolveCb, rejectCb) {
 
   setTimeout(
     () => {
-      if(serverIsUp) resolveCb(updateDOMWithData(data))
-      else rejectCb(updateDOMWithError(error))
+      if(serverIsUp) resolveCb(data)
+      else rejectCb(error)
     },
 
     1000 + Math.random() * 1000 // This is a random waiting time between 1000 and 2000 ms
